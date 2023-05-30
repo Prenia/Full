@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+{% extends "layout.html" %}
+
+{% block content %}
+<html>
+<head>
+    <title>Rooms</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/rooms.css') }}">
+</head>
+<body>
+    <h1>Rooms</h1>
+
+    <h2>Join a room</h2>
+    {% for room in rooms %}
+    <div class="room">
+        <p class="room-name">{{ room.room_name }}</p>
+        <form method="POST" action="{{ url_for('join_chat_room') }}">
+            <input type="hidden" name="room_name" value="{{ room.room_name }}" />
+            <input type="password" name="password" placeholder="Password" required />
+            <button type="submit">Join</button>
+        </form>
+    </div>
+    {% endfor %}
+</body>
+</html>
+{% endblock %}

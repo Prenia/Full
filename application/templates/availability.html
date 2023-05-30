@@ -1,0 +1,112 @@
+<!-- availability.html -->
+<!DOCTYPE html>
+{% extends "layout.html" %}
+
+{% block content %}
+<html>
+
+<head>
+    <title>Availability</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/availability.css') }}">
+</head>
+
+<body>
+    <h1>Availability</h1>
+
+    <form id="availabilityForm" method="POST">
+        {{ form.hidden_tag() }}
+        <label for="day">Day:</label>
+        {{ form.day }}
+        <label for="status">Status:</label>
+        {{ form.status }}
+        <button type="submit">Save Availability</button>
+    </form>
+
+    <h2>Saved Availabilities</h2>
+    <table id="availabilityTable">
+        <thead>
+            <tr>
+                <th>First Name</th> <!-- Change from 'User ID' to 'First Name' -->
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+                <th>Saturday</th>
+                <th>Sunday</th>
+            </tr>
+        </thead>
+        <tbody id="availabilityTableBody">
+            <!-- Availabilities will be added here dynamically -->
+        </tbody>
+    </table>
+
+    <script>
+        var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+        socket.on('availability_updated', function (data) {
+            updateAvailability(data.first_name, data.user_id, data.day, data.status);
+        });
+
+        $(document).ready(function () {
+            $('#availabilityForm').submit(function (e) {
+                e.preventDefault();
+
+                var formData = {
+                    day: $('#day').val(),
+                    status: $('#status').val(),
+                    csrf_token: $('#csrf_token').val()
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/availability',
+                    data: formData,
+                    success: function (response) {
+                        console.log('Availability saved successfully');
+                    },
+                    error: function (error) {
+                        console.error('Error saving availability');
+                    }
+                });
+            });
+
+            function updateAvailability(firstName, userId, day, status) {
+                var userRow = $('#availabilityTableBody tr[data-user="' + userId + '"]');
+
+                if (userRow.length === 0) {
+                    var newRow = '<tr data-user="' + userId + '">' +
+                        '<td>' + firstName + '</td>' +
+                        '<td data-day="Monday"></td>' +
+                        '<td data-day="Tuesday"></td>' +
+                        '<td data-day="Wednesday"></td>' +
+                        '<td data-day="Thursday"></td>' +
+                        '<td data-day="Friday"></td>' +
+                        '<td data-day="Saturday"></td>' +
+                        '<td data-day="Sunday"></td>' +
+                        '</tr>';
+
+                    $('#availabilityTableBody').append(newRow);
+                    userRow = $('#availabilityTableBody tr[data-user="' + userId + '"]');
+                }
+
+                var dayCell = userRow.find('td[data-day="' + day + '"]');
+                dayCell.text(status);
+            }
+
+            {% for availability in availabilities %}
+            var firstName = "{{ availability.user.first_name }}";
+            var userId = "{{ availability.user.id }}";
+            var day = "{{ availability.day }}";
+            var status = "{{ availability.status }}";
+            updateAvailability(firstName, userId, day, status);
+            {% endfor %}
+        });
+    </script>
+
+</body>
+
+</html>
+{% endblock %}

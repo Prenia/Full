@@ -1,0 +1,57 @@
+<header class="header">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+
+
+  <ul class="nav nav-pills col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+    <li class="nav-item">
+      <a href="{{ url_for('index') }}" class="nav-link {% if index %}active{% endif %}">
+        <span class="icon"><i class="fas fa-home"></i></span>
+        Home
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="{{ url_for('chat') }}" class="nav-link {% if chat %}active{% endif %}">
+        <span class="icon"><i class="fas fa-comments"></i></span>
+        Chat
+      </a>
+    </li>
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" href="#" id="optionsDropdown" role="button" data-toggle="dropdown"
+        aria-haspopup="true" aria-expanded="false">
+        <span class="icon"><i class="fas fa-ellipsis-h"></i></span>
+        Options
+      </a>
+      <div class="dropdown-menu" aria-labelledby="optionsDropdown">
+        <a class="dropdown-item" href="{{ url_for('rooms') }}">Chat Rooms</a>
+        <a class="dropdown-item" href="{{ url_for('notes') }}">Flat Issues</a>
+        <a class="dropdown-item" href="{{ url_for('availability') }}">Availability</a>
+      </div>
+    </li>
+    <li class="nav-item">
+      <a href="{{ url_for('contact') }}" class="nav-link {% if contact %}active{% endif %}">
+        <span class="icon"><i class="fas fa-envelope"></i></span>
+        Contact Me
+      </a>
+    </li>
+    {% if not session['username'] %}
+    <a href="{{ url_for('login') }}" class="btn btn-secondary d-flex align-items-center">
+      <span class="icon"><i class="fas fa-sign-in-alt mr-1"></i></span> Login
+    </a>
+    {% else %}
+    <a href="{{ url_for('logout') }}" class="btn btn-secondary d-flex align-items-center">
+      <i class="fas fa-sign-out-alt mr-1"></i> Logout
+    </a>
+    {% endif %}
+    {% if not session['username'] %}
+    <a href="{{ url_for('register') }}" class="btn btn-secondary">
+      <span class="icon"><i class="fas fa-user-plus"></i></span> Sign Up
+    </a>
+    {% endif %}
+  </ul>
+
+  <!-- Include the necessary JavaScript libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+</header>

@@ -1,0 +1,79 @@
+
+  .header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    border-top: 1px solid white;
+    border-bottom: 1px solid white;
+    height: 100px;
+    background-color: orange;
+  }
+  
+  li {
+    display: inline-flex;
+    padding: 5px;
+    padding-right: 60px;
+  }
+  
+  a {
+    text-decoration: none;
+    color: #8076a3;
+  }
+  
+  a:hover {
+    color: white;
+  }
+  
+  .btn {
+    margin: 5px;
+    margin-right: 10px;
+    display: inline-flex;
+    background-color: #fdedec;
+    color: #7c677f;
+    border-color: #f9c5bd;
+    border-radius: 10rem;
+    /* Adjust the border radius value as desired */
+    outline: none;
+    /* Remove the default outline */
+  }
+  
+  .btn:hover {
+    background-color: gray !important;
+    color: #ffffff !important;
+    border-color: #7c677f !important;
+  }
+  
+  .nav {
+    order: 3;
+    flex-basis: 100%;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .nav-link:hover{
+    color: white;
+  }
+  
+  .nav > li {
+    display: inline-flex;
+  }
+  
+  .nav-pills .nav-link.active,
+  .nav-pills .show > .nav-link,
+  .nav-pills .btn-secondary.active,
+  .nav-pills .show > .btn-secondary {
+    background-color: grey;
+    color: white;
+    border-radius: 10rem;
+  }
+  .user {
+    position: absolute;
+    left: 2rem;
+    top: 2.3rem;
+    font-size: 18px;
+    color: #8076a3;
+    align-items: center;
+  }
+  

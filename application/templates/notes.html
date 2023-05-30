@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+{% extends "layout.html" %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/notes.css') }}">
+{% endblock %}
+
+
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval'">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anonymous Sticky Notes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/notes.css') }}">
+</head>
+
+<body>
+    {% block content %}
+    <div class="container">
+        <h1>Flat Issues</h1>
+        <hr>
+        <form id="note-form">
+            <textarea id="note-content" placeholder="Write your complaint here..." required></textarea>
+            <button type="submit">Post</button>
+        </form>
+        <div id="notes-container">
+            {% for note in notes %}
+            <div class="note">
+                <p>{{ note.content }}</p>
+                <p>Created at: {{ note.created_at }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            const notesContainer = $('#notes-container');
+
+            // Handle form submission
+            $('#note-form').submit(function (event) {
+                event.preventDefault();
+                const content = $('#note-content').val().trim();
+                if (content !== '') {
+                    $.ajax({
+                        url: '/notes',
+                        type: 'POST',
+                        data: { content: content },
+                        success: function (response) {
+                            console.log(response.message);
+                            $('#note-content').val('');
+                            addNoteToContainer(response.note.content, response.note.created_at);  // Use the returned note data
+                            fetchNotes(); // Fetch all notes after a new note is added
+                        },
+                        error: function (error) {
+                            console.error(error.responseJSON.error);
+                        }
+                    });
+                }
+            });
+
+            // Fetch and display the sticky notes
+            function fetchNotes() {
+                $.ajax({
+                    url: '/notes',
+                    type: 'GET',
+                    success: function (response) {
+                        // Check if notes array is present in response
+                        if (response && Array.isArray(response.notes)) {
+                            // Empty the notes container
+                            notesContainer.empty();
+                            const notes = response.notes;
+                            // Iterate over all notes
+                            for (let i = 0; i < notes.length; i++) {
+                                const note = notes[i];
+                                addNoteToContainer(note.content, note.created_at);
+                            }
+                        } else {
+                            console.error('Unexpected response:', response);
+                        }
+                    },
+                    error: function (error) {
+                        console.error('Failed to fetch notes:', error);
+                    }
+                });
+            }
+            // Add a new note to the notes container
+            function addNoteToContainer(content, createdAt) {
+                const noteElement = $(
+                    `<div class="note">
+                        <p>${content}</p>
+                        <p>Created at: ${createdAt}</p>
+                    </div>`
+                );
+                notesContainer.append(noteElement);
+            }
+            // Initial fetch of notes
+            fetchNotes();
+
+            // Periodically fetch notes every 5 seconds
+            setInterval(fetchNotes, 5000);
+        });
+    </script>
+
+    {% endblock %}
+</body>
+
+</html>

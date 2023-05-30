@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+{% extends "layout.html" %}
+
+{% block content %}
+<html>
+
+<head>
+    <title>Chat</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+        integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"
+        integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ=="
+        crossorigin="anonymous"></script>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/chat.css') }}">
+
+</head>
+
+<body>
+    <div class="col-md-12 text-center"><h1>You are in {{ room.room_name }} room</h1></div>
+    
+
+    <div class="chat" id="chat">
+        <!-- Messages will be appended here -->
+    </div>
+
+    <form id="chatForm" method="POST">
+        <input type="text" id="chatInput" class="form-control" placeholder="Enter message..."required>
+        <input type="submit" value="Send" class="btn btn-primary center-button">
+    </form>
+
+    <script>
+        $(document).ready(function () {
+            var socket = io.connect('http://' + document.domain + ':' + location.port);
+            var user_id = '{{ session.get("user_id") }}';  // Get user_id from the server-side session
+            var username = '{{ username }}';  // Get username from the server-side session
+            var messages = {{ messages|tojson }}; 
+            socket.on('connect', function () {
+                socket.emit('join', { 'room_id': '{{ room.id }}' });
+                socket.emit('request_messages'); // This line will request to load previous messages
+            });
+
+            // This is the HTML div where you want to append the messages
+            var chatDiv = $("#chat");
+
+            // Function to append a message to the chat div
+            function appendMessageToChatDiv(messageUsername, message) {
+                if (messageUsername === username || messageUsername === user_id) {
+                    chatDiv.append(`<p class="my-message"><strong>${username}:</strong> ${message}</p>`);
+                } else {
+                    chatDiv.append(`<p class="their-message"><strong>${messageUsername}:</strong> ${message}</p>`);
+                }
+                scrollToBottom();
+            }
+
+            // Append all the messages passed into the template into the chat div
+             // Get messages passed into the template
+        for (let i = 0; i < messages.length; i++) {
+            const message = messages[i];
+            appendMessageToChatDiv(message.username, message.message);
+        }
+
+        socket.on('message', function (data) {
+            var msg = data.message;
+            var username = data.username;
+            appendMessageToChatDiv(username, msg);
+        });
+
+        $('#chatForm').submit(function (e) {
+            e.preventDefault();
+            var message = $('#chatInput').val();
+            var room_id = '{{ room.id }}';
+            socket.emit('message', { user_id: user_id, room_id: room_id, message: message });
+            $('#chatInput').val('');
+        });
+
+        function scrollToBottom() {
+            var container = document.getElementById('chat');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Emits a message that user has joined the room
+        socket.on('joined_room', function (data) {
+            var msg = data.message;
+            var username = data.username;
+            appendMessageToChatDiv(username, msg);
+        });
+    
+        });
+    </script>
+    <style>
+        .chat {
+            height: 300px;
+            /* Set the desired height of the chat container */
+            overflow-y: auto;
+            /* Enable vertical scrolling */
+            /*background-color: white;*/
+        }
+
+        .my-message {
+            text-align: right;
+            background-color: lightblue;
+            /* You can change this as per your requirements */
+        }
+
+        .their-message {
+            border: 2px solid #dedede;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .chatForm {
+            align-self: center;
+        }
+        
+    </style>
+
+
+
+
+</body>
+
+</html>
+{% endblock %}

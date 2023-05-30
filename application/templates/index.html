@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+
+<body>
+    <div class="row content-section">
+        <div class="col-md-12 text-center">
+            <h1>Welcome, {% if session['username'] %}{{ session['username'] }}{% else %}Guest{% endif %} to
+                SharedExperience.</h1>
+
+
+            {% if session['username'] %}
+            <h3>Let's get started.</h3>
+            {% else %}
+            <p>Already registered? <a href="{{url_for('login') }}">Login</a></p>
+            {% endif %}
+
+            <div class="text-center">
+                <p>Streamlining Communication for Shared Living Spaces.</p>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                <div class="col">
+                    <a href="{{ url_for('chat') }}">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-comments fa-4x"></i>
+                                <h5 class="card-title">Chat</h5>
+                                <p class="card-text">
+                                    Our chat functionality allows you to easily communicate with your roommates,
+                                    ensuring a smooth shared living experience.
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{{ url_for('availability') }}">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-calendar-check fa-4x"></i>
+                                <h5 class="card-title">Schedule</h5>
+                                <p class="card-text">Coordinate schedules with your roommates to manage chores, rent
+                                    payments, and more efficiently.</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{{ url_for('notes') }}">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-exclamation-triangle fa-4x"></i>
+                                <h5 class="card-title">Issue Reporting</h5>
+                                <p class="card-text">
+                                    Encounter an issue? Report it to your roommates instantly and resolve any conflicts
+                                    with ease.
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+
+            <div class="text-center">
+
+                <p>Getting started on our app is quick and easy! After exploring the informative tiles above, you're
+                    ready to dive into the shared living experience like never before. Begin by creating an account or
+                    logging in to your existing account to access all the features and functionalities tailored for
+                    seamless communication with your roommates. Once you're logged in, you can start chatting with your
+                    roommates, coordinating schedules, and reporting any issues or conflicts that may arise. Our
+                    intuitive interface and user-friendly design ensure that you can navigate through the app
+                    effortlessly. So, let's get started and enhance your shared living journey with SharedExperience!
+                </p>
+
+
+            </div>
+
+        </div>
+    </div>
+</body>
+{% endblock %}
